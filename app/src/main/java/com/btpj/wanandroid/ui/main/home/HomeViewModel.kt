@@ -68,15 +68,15 @@ class HomeViewModel : BaseViewModel() {
                     val response1 = job1.await()
                     val response2 = job2.await()
 
-                    handleRequest(response1, {
-                        handleRequest(response2, {
-                            (response1.data.datas as ArrayList<Article>).addAll(
-                                0,
-                                response2.data
-                            )
-                            articlePageListLiveData.value = response1.data
-                        })
-                    })
+                    val result1 = handleRequest(response1)
+                    val result2 = handleRequest(response2)
+                    if (result1.isSuccess && result2.isSuccess) {
+                        (response1.data.datas as ArrayList<Article>).addAll(
+                            0,
+                            response2.data
+                        )
+                        articlePageListLiveData.value = response1.data
+                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }

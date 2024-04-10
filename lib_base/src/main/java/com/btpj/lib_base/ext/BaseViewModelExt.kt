@@ -6,6 +6,9 @@ import com.btpj.lib_base.data.bean.ApiResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * BaseViewModel的一些扩展方法
@@ -45,12 +48,12 @@ fun BaseViewModel.launch(
  * @param successBlock 服务器请求成功返回成功码的执行回调，默认空实现
  * @param errorBlock 服务器请求成功返回错误码的执行回调，默认返回false的空实现，函数返回值true:拦截统一错误处理，false:不拦截
  */
-suspend fun <T> BaseViewModel.handleRequest(
+fun <T> BaseViewModel.handleRequest(
     response: ApiResponse<T>,
     successBlock: suspend CoroutineScope.(response: ApiResponse<T>) -> Unit = {},
     errorBlock: suspend CoroutineScope.(response: ApiResponse<T>) -> Boolean = { false }
 ) {
-    coroutineScope {
+    viewModelScope.launch {
         when (response.errorCode) {
             0 -> successBlock(response) // 服务器返回请求成功码
             else -> { // 服务器返回的其他错误码
@@ -58,6 +61,34 @@ suspend fun <T> BaseViewModel.handleRequest(
                     // 只有errorBlock返回false不拦截处理时，才去统一提醒错误提示
                     errorResponse.value = response
                 }
+            }
+        }
+    }
+}
+
+/**
+ * 请求结果处理(使用协程二次封装，可避免魔鬼嵌套)
+ *
+ * @param response ApiResponse
+ * @param handleErrorSelf 是否拦截全局的网络错误处理，默认false
+ * @return Result<ApiResponse>
+ */
+suspend fun <T> BaseViewModel.handleRequest(
+    response: ApiResponse<T>,
+    handleErrorSelf: Boolean = false
+): Result<ApiResponse<T>> {
+    return suspendCancellableCoroutine { continuation ->
+        when (response.errorCode) {
+            0 -> {
+                continuation.resume(Result.success(response))
+            }
+
+            else -> { // 服务器返回的其他错误码
+                if (!handleErrorSelf) {
+                    // 只有errorBlock返回false不拦截处理时，才去统一提醒错误提示
+                    errorResponse.value = response
+                }
+                continuation.resume(Result.failure(Exception(response.errorMsg)))
             }
         }
     }
