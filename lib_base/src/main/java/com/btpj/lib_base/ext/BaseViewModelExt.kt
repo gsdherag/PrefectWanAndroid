@@ -7,6 +7,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import java.util.Random
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -31,11 +32,13 @@ fun BaseViewModel.launch(
     // 默认是执行在主线程，相当于launch(Dispatchers.Main)
     viewModelScope.launch {
         try {
+            showLoadingLiveData.value = Random().nextInt();
             tryBlock()
         } catch (e: Exception) {
             exception.value = e
             catchBlock()
         } finally {
+            hideLoadingLiveData.value = Random().nextInt();
             finallyBlock()
         }
     }

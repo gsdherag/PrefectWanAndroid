@@ -1,5 +1,13 @@
 pluginManagement {
     repositories {
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://repo1.maven.org/maven2/' }
+        mavenCentral()
+        //jitpack.io代理地址
+        maven {  allowInsecureProtocol = true
+            url 'http://10.88.21.47:8080/repository/maven_jitpack/'
+        }
         gradlePluginPortal()
         google()
         mavenCentral()
@@ -8,6 +16,14 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://repo1.maven.org/maven2/' }
+        mavenCentral()
+        //jitpack.io代理地址
+        maven {  allowInsecureProtocol = true
+            url 'http://10.88.21.47:8080/repository/maven_jitpack/'
+        }
         google()
         mavenCentral()
         maven { url 'https://jitpack.io' }

@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.btpj.lib_base.BR
 import com.btpj.lib_base.R
 import com.btpj.lib_base.ext.hideLoading
+import com.btpj.lib_base.ext.showLoading
 import com.btpj.lib_base.utils.LogUtil
 import com.btpj.lib_base.utils.StatusBarUtil
 import com.btpj.lib_base.utils.ToastUtil
@@ -94,6 +95,12 @@ abstract class BaseVMBActivity<VM : BaseViewModel, B : ViewDataBinding>(private 
                         this@BaseVMBActivity, it.message ?: getString(R.string.response_error)
                     )
                 }
+            }
+            showLoadingLiveData.observe(this@BaseVMBActivity) {
+                showLoading()
+            }
+            hideLoadingLiveData.observe(this@BaseVMBActivity) {
+                hideLoading()
             }
 
             // 全局服务器返回的错误信息监听

@@ -16,6 +16,10 @@ abstract class BaseViewModel : ViewModel() {
     /** 请求服务器返回错误（服务器请求成功但status错误，譬如：登录过期等） */
     val errorResponse = MutableLiveData<ApiResponse<*>?>()
 
+    //这里如果有较多的逻辑，可以单独抽出来，进行分发Action
+    var showLoadingLiveData = MutableLiveData<Int>()
+    var hideLoadingLiveData = MutableLiveData<Int>()
+
     /** 界面启动时要进行的初始化逻辑，如网络请求,数据初始化等 */
     abstract fun start()
 }
